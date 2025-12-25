@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>搜索功能测试</title>
+</head>
+<body>
+    <h1>搜索功能测试</h1>
+    
+    <div>
+        <input type="text" id="keyword" placeholder="输入关键词">
+        <button onclick="testSearch()">搜索</button>
+    </div>
+    
+    <div id="results" style="margin-top: 20px;"></div>
+    
+    <script>
+        async function testSearch() {
+            const keyword = document.getElementById('keyword').value;
+            if (!keyword) {
+                alert('请输入搜索关键词');
+                return;
+            }
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '搜索中...';
+            
+            try {
+                // 测试用户搜索
+                console.log('测试用户搜索...');
+                const userResponse = await fetch(`http://localhost/client-book-vue/api/index.php/search?keyword=${keyword}&type=users`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                const userData = await userResponse.json();
+                console.log('用户搜索结果:', userData);
+                
+                // 测试群聊搜索
+                console.log('测试群聊搜索...');
+                const groupResponse = await fetch(`http://localhost/client-book-vue/api/index.php/search?keyword=${keyword}&type=groups`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                const groupData = await groupResponse.json();
+                console.log('群聊搜索结果:', groupData);
+                
+                // 显示结果
+                let resultsHTML = '<h2>搜索结果</h2>';
+                
+                resultsHTML += '<h3>用户 (' + (userData.users ? userData.users.length : 0) + ')</h3>';
+                if (userData.users && userData.users.length > 0) {
+                    resultsHTML += '<ul>';
+                    userData.users.forEach(user => {
+                        resultsHTML += `<li>ID: ${user.id}, 用户名: ${user.username}, 邮箱: ${user.email}</li>`;
+                    });
+                    resultsHTML += '</ul>';
+                } else {
+                    resultsHTML += '<p>未找到用户</p>';
+                }
+                
+                resultsHTML += '<h3>群聊 (' + (groupData.groups ? groupData.groups.length : 0) + ')</h3>';
+                if (groupData.groups && groupData.groups.length > 0) {
+                    resultsHTML += '<ul>';
+                    groupData.groups.forEach(group => {
+                        resultsHTML += `<li>ID: ${group.id}, 群名: ${group.name}, 群主ID: ${group.group_owner_id}, 成员数: ${group.member_count}</li>`;
+                    });
+                    resultsHTML += '</ul>';
+                } else {
+                    resultsHTML += '<p>未找到群聊</p>';
+                }
+                
+                resultsDiv.innerHTML = resultsHTML;
+                
+            } catch (error) {
+                console.error('搜索测试失败:', error);
+                resultsDiv.innerHTML = '<p style="color: red;">搜索测试失败: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>

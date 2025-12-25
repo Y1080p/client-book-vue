@@ -1,0 +1,29 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /client-book-vue/
+  
+  # 处理 API 请求 - 重写到 api/index.php
+  RewriteCond %{REQUEST_URI} ^/client-book-vue/api/
+  RewriteRule ^api/(.*)$ api/index.php [QSA,L]
+  
+  # 处理静态资源
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+  
+  # 将所有其他请求重定向到 index.html
+  RewriteRule ^(?!index\.html$).*$ index.html [L,QSA]
+</IfModule>
+
+# 设置正确的 MIME 类型
+<IfModule mod_mime.c>
+  AddType application/javascript .js
+  AddType text/css .css
+</IfModule>
+
+# 启用缓存
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+</IfModule>

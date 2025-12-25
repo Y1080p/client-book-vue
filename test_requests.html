@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>申请列表功能测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .request-list {
+            margin-top: 20px;
+        }
+        .request-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .request-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        .request-info {
+            flex: 1;
+        }
+        .request-message {
+            font-weight: bold;
+        }
+        .request-time {
+            font-size: 12px;
+            color: #666;
+        }
+        .request-actions {
+            display: flex;
+            gap: 5px;
+        }
+        button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .btn-accept {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-reject {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            margin-right: 10px;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 3px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>申请列表功能测试</h1>
+        
+        <div class="section">
+            <h2>测试步骤</h2>
+            <p>请按照以下顺序测试功能：</p>
+            <ol>
+                <li>点击"初始化数据库表"按钮，创建必要的表</li>
+                <li>点击"登录"按钮，模拟用户登录</li>
+                <li>点击"获取申请列表"，查看当前申请</li>
+                <li>点击"发送好友申请"，模拟发送好友申请</li>
+                <li>点击"发送群聊申请"，模拟发送群聊申请</li>
+                <li>点击"同意"或"拒绝"按钮，测试处理申请功能</li>
+            </ol>
+            <button class="btn-primary" onclick="initTables()">1. 初始化数据库表</button>
+            <button class="btn-primary" onclick="testLogin()">2. 登录</button>
+            <button class="btn-primary" onclick="getRequests()">3. 获取申请列表</button>
+            <button class="btn-primary" onclick="sendFriendRequest()">4. 发送好友申请</button>
+            <button class="btn-primary" onclick="sendGroupRequest()">5. 发送群聊申请</button>
+            <div id="result" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="section">
+            <h2>申请列表</h2>
+            <div id="loading" style="display:none;">加载中...</div>
+            <div id="no-requests" style="display:none;">暂无申请</div>
+            <div id="request-list" class="request-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3011/api';
+        let currentRequests = [];
+        
+        function showResult(message, isSuccess = true) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result ' + (isSuccess ? 'success' : 'error');
+            resultDiv.textContent = message;
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                resultDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 初始化数据库表
+        async function initTables() {
+            try {
+                const response = await fetch('setup_request_tables.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('数据库表初始化成功！');
+                    getRequests(); // 自动获取申请列表
+                } else {
+                    showResult('初始化失败: ' + data.message, false);
+                }
+            } catch (error) {
+                showResult('初始化失败: ' + error.message, false);
+            }
+        }
+        
+        // 测试登录
+        async function testLogin() {
+            try {
+                const response = await axios.post(API_BASE + '/auth/login', {
+                    username: 'admin',
+                    password: '123456'
+                }, { withCredentials: true });
+                
+                showResult('登录成功: ' + response.data.message);
+                getRequests(); // 自动获取申请列表
+            } catch (error) {
+                showResult('登录失败: ' + error.message, false);
+            }
+        }
+        
+        // 获取申请列表
+        async function getRequests() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('no-requests').style.display = 'none';
+            document.getElementById('request-list').innerHTML = '';
+            
+            try {
+                const response = await axios.get(API_BASE + '/chat/groups/requests', {
+                    withCredentials: true
+                });
+                
+                document.getElementById('loading').style.display = 'none';
+                
+                if (response.data.success && response.data.requests) {
+                    currentRequests = response.data.requests;
+                    displayRequests(response.data.requests);
+                } else {
+                    document.getElementById('no-requests').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                showResult('获取申请列表失败: ' + error.message, false);
+            }
+        }
+        
+        // 显示申请列表
+        function displayRequests(requests) {
+            const requestList = document.getElementById('request-list');
+            
+            if (requests.length === 0) {
+                document.getElementById('no-requests').style.display = 'block';
+                return;
+            }
+            
+            let html = '';
+            requests.forEach(request => {
+                html += `
+                    <div class="request-item">
+                        <div class="request-avatar">
+                            <i class="${request.type === 'friend' ? 'fas fa-user' : 'fas fa-users'}"></i>
+                        </div>
+                        <div class="request-info">
+                            <div class="request-message">${request.message}</div>
+                            <div class="request-time">${new Date(request.create_time).toLocaleString()}</div>
+                        </div>
+                        <div class="request-actions">
+                            ${request.status === 'pending' ? 
+                                `<button class="btn-accept" onclick="handleRequest(${request.id}, '${request.type}', 'accept')">同意</button>
+                                 <button class="btn-reject" onclick="handleRequest(${request.id}, '${request.type}', 'reject')">拒绝</button>` :
+                                `<span>${request.status === 'accepted' ? '已同意' : '已拒绝'}</span>`
+                            }
+                        </div>
+                    </div>
+                `;
+            });
+            
+            requestList.innerHTML = html;
+        }
+        
+        // 发送好友申请
+        async function sendFriendRequest() {
+            try {
+                const response = await axios.post(API_BASE + '/chat/friends/request', {
+                    target_user_id: 2
+                }, { withCredentials: true });
+                
+                showResult('发送好友申请成功: ' + response.data.message);
+                getRequests(); // 刷新申请列表
+            } catch (error) {
+                showResult('发送好友申请失败: ' + error.message, false);
+            }
+        }
+        
+        // 发送群聊申请
+        async function sendGroupRequest() {
+            try {
+                const response = await axios.post(API_BASE + '/chat/groups/join-request', {
+                    group_id: 1
+                }, { withCredentials: true });
+                
+                showResult('发送群聊申请成功: ' + response.data.message);
+                getRequests(); // 刷新申请列表
+            } catch (error) {
+                showResult('发送群聊申请失败: ' + error.message, false);
+            }
+        }
+        
+        // 处理申请
+        async function handleRequest(requestId, type, action) {
+            try {
+                let response;
+                if (type === 'friend') {
+                    response = await axios.post(API_BASE + '/chat/requests/handle-friend', {
+                        request_id: requestId,
+                        action: action
+                    }, { withCredentials: true });
+                } else if (type === 'group') {
+                    response = await axios.post(API_BASE + '/chat/requests/handle-group', {
+                        request_id: requestId,
+                        action: action
+                    }, { withCredentials: true });
+                }
+                
+                if (response.data.success) {
+                    showResult(response.data.message);
+                    // 更新本地数据
+                    const request = currentRequests.find(r => r.id === requestId);
+                    if (request) {
+                        request.status = action === 'accept' ? 'accepted' : 'rejected';
+                    }
+                    displayRequests(currentRequests); // 刷新显示
+                }
+            } catch (error) {
+                showResult('处理申请失败: ' + error.message, false);
+            }
+        }
+        
+        // 添加Font Awesome图标支持
+        const fontAwesome = document.createElement('link');
+        fontAwesome.rel = 'stylesheet';
+        fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+        document.head.appendChild(fontAwesome);
+    </script>
+</body>
+</html>
