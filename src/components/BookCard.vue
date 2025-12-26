@@ -1,7 +1,7 @@
 <template>
   <div class="book-card">
     <div class="book-cover" @click="goToDetail" style="cursor: pointer;">
-      <img :src="book.cover_image || '/client-book/image/book-icon.png'" 
+      <img :src="book.cover_image || '/image/book-icon.png'" 
            :alt="book.title" 
            class="img-fluid"
            @error="handleImageError">

@@ -13,7 +13,7 @@
     <div v-else-if="book" class="row">
       <div class="col-md-4">
         <div class="book-cover">
-          <img :src="book.cover_image || '/client-book/image/book-icon.png'" 
+          <img :src="book.cover_image || '/image/book-icon.png'" 
                :alt="book.title" 
                class="img-fluid rounded"
                @error="handleImageError">
@@ -97,7 +97,7 @@
                   <div class="col-md-6">
                     <h6>商品信息</h6>
                     <div class="d-flex align-items-center mb-3">
-                      <img :src="book.cover_image || '/client-book/image/book-icon.png'" 
+                      <img :src="book.cover_image || '/image/book-icon.png'" 
                            :alt="book.title" 
                            class="img-thumbnail me-3" 
                            style="width: 80px; height: 100px; object-fit: cover;">

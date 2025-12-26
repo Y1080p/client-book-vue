@@ -88,7 +88,7 @@ export default {
       if (coverImage && !coverImage.includes('images/')) {
         return `/client-book${coverImage.startsWith('/') ? '' : '/'}${coverImage}`
       }
-      return '/client-book/image/book-icon.png'
+      return '/image/book-icon.png'
     }
 
     const handleImageError = (event) => {

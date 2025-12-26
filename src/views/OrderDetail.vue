@@ -58,7 +58,7 @@
               <h6>商品信息</h6>
               <div v-for="item in order.items" :key="item.id" class="border rounded p-3 mb-2">
                 <div class="d-flex align-items-center">
-                  <img :src="item.cover_image || '/client-book/image/book-icon.png'" 
+                  <img :src="item.cover_image || '/image/book-icon.png'" 
                        :alt="item.title" 
                        class="img-thumbnail me-3" 
                        style="width: 60px; height: 80px; object-fit: cover;">

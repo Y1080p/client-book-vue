@@ -89,7 +89,7 @@ export default {
             author: item.author || '未知作者',
             price: item.price || 0,
             stock: item.stock || 0,
-            cover_image: item.cover_image || './image/book-icon.png'
+            cover_image: item.cover_image || '/image/book-icon.png'
           }
         }))
       }
