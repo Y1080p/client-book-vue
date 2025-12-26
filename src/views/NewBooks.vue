@@ -77,7 +77,7 @@ export default {
     }
 
     const handleImageError = (event) => {
-      event.target.src = '/client-book/image/book-icon.png'
+      event.target.src = '/image/book-icon.png'
     }
 
     const formatPrice = (price) => {
