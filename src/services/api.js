@@ -39,7 +39,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // 未授权，跳转到登录页
-      window.location.href = '/client-book-vue/#/login'
+      window.location.href = '/#/login'
     }
     return Promise.reject(error)
   }
