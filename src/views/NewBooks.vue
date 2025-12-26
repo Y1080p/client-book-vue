@@ -70,10 +70,18 @@ export default {
     } = useBookStates()
 
     const getBookCover = (coverImage) => {
-      if (coverImage && !coverImage.includes('images/')) {
-        return `${coverImage.startsWith('/') ? '' : '/'}${coverImage}`
+      if (!coverImage) {
+        return '/image/book-icon.png'
       }
-      return '/image/book-icon.png'
+      // 如果是完整URL（http/https开头），直接返回
+      if (coverImage.startsWith('http://') || coverImage.startsWith('https://')) {
+        return coverImage
+      }
+      // 如果是相对路径且不包含images/，返回默认图标
+      if (!coverImage.includes('images/')) {
+        return '/image/book-icon.png'
+      }
+      return coverImage
     }
 
     const handleImageError = (event) => {
