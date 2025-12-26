@@ -116,7 +116,8 @@ export const settingsApi = {
   // 从服务器获取用户设置
   async getUserSettings() {
     try {
-      const response = await fetch('/api/user/settings', {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+      const response = await fetch(`${API_BASE_URL}/api/user/settings`, {
         method: 'GET',
         credentials: 'include'
       })
