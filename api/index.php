@@ -360,7 +360,14 @@ function login() {
                 error_log("Failed to update user online status on login: " . $e->getMessage());
             }
             
-            echo json_encode(['success' => true, 'message' => '登录成功']);
+            echo json_encode([
+                'success' => true,
+                'message' => '登录成功',
+                'user' => [
+                    'id' => $user['id'],
+                    'username' => $user['username']
+                ]
+            ]);
         } else {
             echo json_encode(['success' => false, 'message' => '用户名或密码错误']);
         }
