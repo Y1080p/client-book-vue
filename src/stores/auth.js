@@ -29,7 +29,16 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await api.login(username, password)
       if (response.success) {
-        await checkAuthStatus()
+        // 直接使用返回的用户信息
+        if (response.user) {
+          user.value = {
+            username: response.user.username
+          }
+          isLoggedIn.value = true
+        } else {
+          // 如果没有返回用户信息，尝试检查登录状态
+          await checkAuthStatus()
+        }
       }
       return response
     } catch (error) {

@@ -120,15 +120,16 @@ export const settingsApi = {
         method: 'GET',
         credentials: 'include'
       })
-      
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        // 返回失败标记，但不抛出错误（静默失败）
+        return { success: false }
       }
-      
+
       return await response.json()
     } catch (error) {
-      console.error('获取用户设置失败:', error)
-      throw error
+      // 静默失败，返回空结果
+      return { success: false }
     }
   }
 }
