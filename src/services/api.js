@@ -37,7 +37,8 @@ axiosInstance.interceptors.response.use(
     return response
   },
   (error) => {
-    if (error.response?.status === 401) {
+    // 只在非登录页面时跳转，避免循环
+    if (error.response?.status === 401 && !window.location.hash.includes('#/login')) {
       // 未授权，跳转到登录页
       window.location.href = '/#/login'
     }
