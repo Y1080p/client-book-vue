@@ -18,8 +18,12 @@ export default {
   },
   async created() {
     // 应用启动时检查登录状态
+    console.log('=== APP CREATED DEBUG ===');
+    console.log('Checking login status...');
     const userStore = useUserStore()
     await userStore.checkLoginStatus()
+    console.log('Initial login status:', userStore.userInfo);
+    console.log('========================');
   }
 }
 </script>

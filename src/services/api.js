@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // 替换第3行的代码
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL + '/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -54,7 +54,15 @@ export const api = {
   },
 
   async login(username, password) {
+    console.log('=== API LOGIN DEBUG ===');
+    console.log('Making login request to:', '/auth/login');
+    console.log('Request data:', { username, password: !!password });
+    console.log('Full URL:', this.baseURL + '/auth/login');
+
     const response = await axiosInstance.post('/auth/login', { username, password })
+    console.log('Login response status:', response.status);
+    console.log('Login response data:', response.data);
+
     return response.data
   },
 

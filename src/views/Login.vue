@@ -46,8 +46,15 @@ export default {
 
     const login = async () => {
       loading.value = true
+      console.log('=== LOGIN DEBUG START ===');
+      console.log('Username:', form.value.username);
+      console.log('Password provided:', !!form.value.password);
+      console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+
       try {
         const result = await userStore.login(form.value.username, form.value.password)
+        console.log('Login API response:', result);
+
         if (result.success) {
           alert('登录成功')
           router.push('/')
@@ -56,9 +63,15 @@ export default {
         }
       } catch (error) {
         console.error('登录失败:', error)
+        console.error('Error details:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status
+        })
         alert('登录失败，请检查用户名和密码')
       } finally {
         loading.value = false
+        console.log('=== LOGIN DEBUG END ===');
       }
     }
 

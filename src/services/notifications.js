@@ -93,7 +93,8 @@ export const settingsApi = {
   // 更新用户设置到服务器
   async updateUserSettings(settings) {
     try {
-      const response = await fetch('/api/user/settings', {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+      const response = await fetch(`${API_BASE_URL}/user/settings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -117,18 +118,32 @@ export const settingsApi = {
   async getUserSettings() {
     try {
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
-      const response = await fetch(`${API_BASE_URL}/api/user/settings`, {
+      console.log('=== GET USER SETTINGS DEBUG ===');
+      console.log('API_BASE_URL:', API_BASE_URL);
+      console.log('Requesting:', `${API_BASE_URL}/user/settings`);
+
+      const response = await fetch(`${API_BASE_URL}/user/settings`, {
         method: 'GET',
         credentials: 'include'
       })
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      console.log('Response headers:', response.headers);
+
       if (!response.ok) {
         // 返回失败标记，但不抛出错误（静默失败）
+        console.log('Get settings failed');
         return { success: false }
       }
 
-      return await response.json()
+      const data = await response.json()
+      console.log('Settings data:', data);
+      console.log('===============================');
+
+      return data
     } catch (error) {
+      console.error('Get settings error:', error);
       // 静默失败，返回空结果
       return { success: false }
     }
@@ -157,7 +172,8 @@ export const applySettings = (settings) => {
 // 更新在线状态可见性到服务器
 const updateOnlineStatusVisibility = async (isVisible) => {
   try {
-    const response = await fetch('/api/user/online-status-visibility', {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+    const response = await fetch(`${API_BASE_URL}/user/online-status-visibility`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
