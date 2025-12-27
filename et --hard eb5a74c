@@ -1,0 +1,24 @@
+[33m6ec9abe[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m 修复生产环境API地址：使用域名检测并硬编码
+[33mb5e46b0[m 统一API_BASE_URL环境变量获取
+[33m7bb2d3a[m 修复生产环境API配置：添加.php后缀并确保环境变量加载
+[33mc474935[m fix: 修复生产环境 CORS 跨域配置问题3
+[33mfbe0d3e[m fix: 修复生产环境 CORS 跨域配置问题2
+[33m592b202[m fix: 修复生产环境 CORS 跨域配置问题
+[33m184bd22[m uodate所有文件和文件夹
+[33mc15ef90[m 回退旧api
+[33meb5a74c[m 修复session跨域问题：samesite配置，生产环境API地址配置
+[33mc400324[m Fix API base URL for local development
+[33ma28e310[m Fix local development API base URL
+[33m4cbfe5f[m Prevent login redirect loop and support cross-origin session
+[33m20a4b9a[m Fix login redirect path
+[33m208eab5[m Fix getUserSettings to use correct API base URL
+[33m233def6[m Return user info in login API response
+[33m309a4cc[m Fix cross-domain session issue by using user info from login response and silent getUserSettings failure
+[33mdb2c835[m Fix getBookCover function to handle full URLs correctly
+[33mad0513d[m Fix image paths in handleImageError functions
+[33meb5349c[m Fix book-icon.png path and add image to public folder
+[33m1abfda9[m Change API_BASE_URL to use VITE_API_BASE_URL
+[33m0689966[m Update API base URL for production environment
+[33m2b413a7[m Update VITE_API_BASE_URL for production environment
+[33m73ad95b[m Add files via upload
+[33m4f4d12e[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m 上传完整项目：包含api/src等文件夹及所有文件
